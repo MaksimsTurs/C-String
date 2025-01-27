@@ -10,9 +10,11 @@ String string_create(const char *string_value) {
 	
 	new_string.length = length;
 	new_string.value = (char*)malloc(length);
+	if(new_string.value == NULL) {
+		return new_string;
+	}
 	
 	memmove(new_string.value, string_value, length);
-
 	return new_string;
 }
 
@@ -31,15 +33,6 @@ size_t string_append(String* string, const char* append_string) {
 	string->value = new_string;
 
 	return new_length;
-}
-
-size_t string_length(const char *str) {
-	size_t length = 0;
-	while(*str++) {
-		length++;
-	}
-	str -= length;
-	return length;
 }
 
 size_t string_index_of(String* string, const char character, size_t start_position) {
@@ -70,8 +63,39 @@ size_t string_slice(String* string, size_t start, size_t end) {
 
 	string->value = new_string;
 	string->length = new_string_length;
-
 	return new_string_length;
+}
+
+size_t string_repeat(String* string, const char* repeater, size_t repeater_count) {
+	size_t repeater_length = string_length(repeater);
+	size_t new_string_length = string->length + (repeater_count * repeater_length);
+	size_t index = 0;
+
+	string->value = (char*)realloc(string->value, new_string_length);
+	if(string->value == NULL) {
+		return string->length;
+	}
+
+	string->value += string->length;
+	while(repeater_count > index) {
+		memmove(string->value, repeater, repeater_length);
+		string->value += ((index || 1) * repeater_length);
+		index++;
+	}
+
+	string->length = new_string_length;
+	string->value -= new_string_length;
+	string->value[new_string_length] = '\0';
+	return new_string_length;
+}
+
+size_t string_length(const char *str) {
+	size_t length = 0;
+	while(*str++) {
+		length++;
+	}
+	str -= length;
+	return length;
 }
 
 unsigned char string_compare(const char* string_one, const char* string_two) {
