@@ -30,7 +30,7 @@ SB_Return_Code sb_string_append(SB_String* self, SB_CString append_string, SB_US
 
 	self->value = (SB_VString)realloc(self->value, string_new_length * append_count);
 	if(self->value == NULL)
-	return SB_ERROR_MEMALLOC;
+		return SB_ERROR_MEMALLOC;
 	
 	self->value += self->length;
 	if(append_count == 1) {
