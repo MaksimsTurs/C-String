@@ -1,46 +1,68 @@
 # C String
 
-Create a new `String` struct.
+Counts length of `SB_CString string`, allocates new memory for it and stores both size and pointer to memory in `SB_String* self` structure.
 ```c
-String string_create(const char* string_value);
+SB_Return_Code sb_string_create(SB_String* self, SB_CString string);
 ```
-Count length of string with use of a `\0`.
+
+Frees the allocated memory `SB_String* self->value`.
 ```c
-size_t string_length(const char* string);
+SB_Return_Code sb_string_delete(SB_String* self);
 ```
-Append a `append_string` to the `string->value`.
+
+Returns size of `SB_CString self`.
 ```c
-size_t string_append(String* string, const char* append_string);
+SB_ULLong sb_string_length(SB_CString self);
 ```
-Get first index of `character` in `string->value`, `start_position` can be passed as param.
+
+Adds `SB_CString append_string` to `SB_String* self->value`
+`SB_UShort count` times.
 ```c
-size_t string_index_of(String* string, const char character, size_t start_position);
+SB_Return_Code sb_string_append(SB_String* self, SB_CString append_string, SB_UShort count);
 ```
-Slice string from `start` to `end`.
+
+Returns first index of found `SB_CChar ch` in `SB_String* self->value`, the start position can be specified with `SB_ULLong start_position`.
 ```c
-size_t string_slice(String* string, size_t start, size_t end);
+SB_ULLong sb_string_index_of(SB_String* self, SB_CChar ch, SB_ULLong start_position);
 ```
-Repeat a `repeater` with `repeater_count` count.
+
+Stores substring in `SB_String* self`, from `SB_ULLong start` to `SB_ULLong end`.
 ```c
-size_t string_repeat(String* string, const char* repeater, size_t repeater_count);
+SB_Return_Code sb_string_slice(SB_String* self, SB_ULLong start, SB_ULLong end);
 ```
-Compare two strings.
+
+Repeats `SB_CString repeater` `SB_UShort count` times and stores new string in `SB_String* self->value`.
 ```c
-unsigned char string_compare(const char* str_one, const char* str_two);
+SB_Return_Code sb_string_repeat(SB_String* self, SB_CString repeater, SB_UShort count);
 ```
+
+Compare `SB_CString str_one` with `SB_CString str_two`.
+```c
+SB_Boolean sb_string_compare(SB_CString str_one, SB_CString str_two);
+```
+
 ## Example
 ```c
-#include "String.h"
+#include "SBString.h"
+
+#include <stdio.h>
 
 int main(void) {
-	String str = string_create("Some string\0");
+	SB_String name = {0};
 
-	string_append(&str, "append");
-	string_compare(str.value, "compare");
-	string_index_of(&str, 's', 0);
-	string_length(str.value);
-	string_repeat(&str, "repeat", 10);
-	string_slice(&str, 2, str.length);
+	sb_string_create(&name, "Max Bubkin\0");
+	printf("%s %lli\n", name.value, name.length);
+	sb_string_append(&name, " Ne Bubkin\0", 1);
+	printf("%s %lli\n", name.value, name.length);
+	sb_string_append(&name, " Ne Bubkin \0", 5);
+	printf("%s %lli\n", name.value, name.length);
+	sb_string_append(&name, " Ne Bubkin \0", 120);
+	printf("%s %lli\n", name.value, name.length);
+	sb_string_repeat(&name, " Ne Bubkin", 120);
+	printf("%s %lli\n", name.value, name.length);
+	printf("%lli", sb_string_index_of(&name, 'r', 0));
+	sb_string_slice(&name, 1, name.length - 5);
+	printf("%s %lli", name.value, name.length);
 
 	return 0;
 }
