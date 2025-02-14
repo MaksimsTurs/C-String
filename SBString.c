@@ -14,11 +14,11 @@ SB_Return_Code sb_string_create(SB_String* self, SB_CString string) {
 	return SB_SUCCESS;
 }
 
-SB_Return_Code sb_string_delete(SB_String* self) {
-	if(self == NULL || self->value == NULL)
+SB_Return_Code sb_string_delete(SB_String self) {
+	if(self.value == NULL)
 		return SB_ERROR_NULL_PTR;
 
-	free(self->value);
+	free(self.value);
 
 	return SB_SUCCESS;
 }
@@ -116,6 +116,51 @@ SB_ULLong sb_string_length(SB_CString self) {
 		length++;
 
 	return length;
+}
+
+SB_Return_Code sb_string_split_delete(SB_Split self) {
+	for(SB_UShort index = 0; index < self.length; index++) {
+		if(self.item[index] != NULL)
+			free((void*)self.item[index]);
+	}
+
+	free(self.item);
+
+	return SB_SUCCESS;
+}
+
+SB_Return_Code sb_string_split(SB_Split* split, SB_CString to_split, SB_CChar spliter) {
+	SB_Char ch = ' ';
+	SB_VString item = NULL;
+	SB_UShort ch_count = 0;
+	
+	split->item = (SB_CString*)malloc(1);
+
+	while(ch != '\0') {
+		ch = *to_split;
+		if(ch == spliter || ch == '\0') {
+			// Skip spliter.
+			to_split++;
+
+			split->length++;
+			split->item = (SB_CString*)realloc(split->item, (sizeof(SB_CString) * split->length) + 1);
+			if(split->item == NULL)
+				return SB_ERROR_MEMALLOC;
+			item = (SB_VString)malloc(ch_count);
+			if(split->item == NULL)
+				return SB_ERROR_MEMALLOC;
+
+			memcpy(item, (to_split - ch_count) - 1, ch_count);
+			item[ch_count] = '\0';
+			split->item[split->length - 1] = item;
+			ch_count = 0;
+		}
+
+		ch_count++;
+		to_split++;
+	}
+
+	return SB_SUCCESS;
 }
 
 SB_Boolean sb_string_compare(SB_CString str_one, SB_CString str_two) {

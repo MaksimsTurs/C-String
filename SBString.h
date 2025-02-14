@@ -24,6 +24,7 @@ typedef char*              SB_VString;
 typedef const char*        SB_CString;
 /*===========================================*/
 typedef const char         SB_CChar;
+typedef char               SB_Char;
 /*===========================================*/
 typedef unsigned long long SB_ULLong;
 typedef long long          SB_LLong;
@@ -36,8 +37,15 @@ typedef struct SB_String {
 	SB_ULLong length;
 } SB_String;
 
+typedef struct SB_Split {
+	SB_CString* item;
+	SB_UShort length;
+} SB_Split;
+
 SB_Return_Code sb_string_create(SB_String* self, SB_CString string);
-SB_Return_Code sb_string_delete(SB_String* self);
+SB_Return_Code sb_string_delete(SB_String self);
+SB_Return_Code sb_string_split_delete(SB_Split self);
+SB_Return_Code sb_string_split(SB_Split* split, SB_CString to_split, SB_CChar spliter);
 SB_Return_Code sb_string_append(SB_String* self, SB_CString append_string, SB_UShort count);
 SB_Return_Code sb_string_slice(SB_String* self, SB_ULLong start, SB_ULLong end);
 SB_Return_Code sb_string_repeat(SB_String* self, SB_CString repeater, SB_UShort count);

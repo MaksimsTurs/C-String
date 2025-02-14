@@ -41,6 +41,16 @@ Compare `SB_CString str_one` with `SB_CString str_two`.
 SB_Boolean sb_string_compare(SB_CString str_one, SB_CString str_two);
 ```
 
+Create slice of strings, separate a string in to string array with `SB_CChar spliter`.
+```c
+SB_Return_Code sb_string_split(SB_Split* split, SB_CString to_split, SB_CChar spliter);
+```
+
+Delete array of sliced strings.
+```c
+SB_Return_Code sb_string_split_delete(SB_Split self);
+```
+
 ## Example
 ```c
 #include "SBString.h"
