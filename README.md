@@ -1,126 +1,133 @@
-# C String
+# CString Library
 
-Counts length of `const SB_String_Ptr string`, allocates new memory for it and stores both size and pointer to memory in `SB_String* self` structure.
+The `CString` library is a C-based utility designed to handle dynamic strings and perform various string operations, such as splitting, appending, copying, slicing, and more. The library provides functions that ensure safe memory allocation and management for string operations.
+
+## Features
+
+- **Memory Safe:** Handles dynamic memory allocation for strings and performs checks to avoid memory issues.
+- **Efficient String Operations:** Provides operations like appending, slicing, splitting, and searching within strings.
+- **Error Handling:** Uses error codes for handling invalid operations.
+
+## Functions
+
+### `cstr_build(CSTR_String* const this, CSTR_Char_Ptr const value)`
+Allocates memory and initializes a `CSTR_String` object with a given string.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_String` object.
+  - `value`: The string to assign to the `CSTR_String`.
+  
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_free(CSTR_String* const this)`
+Frees the memory used by a `CSTR_String` object.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_String` object.
+
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_append(CSTR_String* const this, CSTR_Char_Ptr append_string, CSTR_UChar const count)`
+Appends a given string `append_string` to the existing string `this` a specified number of times.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_String` object.
+  - `append_string`: The string to append.
+  - `count`: The number of times to append the string.
+  
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_split(CSTR_Slices* const this, CSTR_Char_Ptr const to_split, CSTR_Char const spliter)`
+Splits a string into multiple slices based on a delimiter character.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_Slices` structure to hold the resulting slices.
+  - `to_split`: The string to split.
+  - `spliter`: The delimiter character.
+  
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_split_free(CSTR_Slices* const this)`
+Frees the memory used by the `CSTR_Slices` structure.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_Slices` structure.
+
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_index_of(CSTR_String* const this, CSTR_Char const ch, CSTR_ULLong const start_position)`
+Finds the first occurrence of a character `ch` starting from a specified position in the string.
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_String` object.
+  - `ch`: The character to search for.
+  - `start_position`: The position in the string to start searching from.
+  
+- **Returns:** The index of the character or an error code if not found.
+
+### `cstr_slice(CSTR_String* const this, CSTR_ULLong const start, CSTR_ULLong const end)`
+Creates a slice of the string from `start` to `end` (exclusive).
+
+- **Parameters:**
+  - `this`: A pointer to the `CSTR_String` object.
+  - `start`: The start position of the slice.
+  - `end`: The end position of the slice.
+  
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_len(CSTR_Char_Ptr const value)`
+Returns the length of the string (excluding the null terminator).
+
+- **Parameters:**
+  - `value`: The string whose length is to be determined.
+  
+- **Returns:** The length of the string.
+
+### `cstr_cpy(CSTR_Char_Ptr const dest, CSTR_Char_Ptr const source, CSTR_LLong const length)`
+Copies `length` characters from `source` to `dest`.
+
+- **Parameters:**
+  - `dest`: The destination string.
+  - `source`: The source string.
+  - `length`: The number of characters to copy.
+  
+- **Returns:** `CSTR_Ret_Code` (success or error code)
+
+### `cstr_comp(CSTR_Char_Ptr const str_one, CSTR_Char_Ptr const str_two)`
+Compares two strings for equality.
+
+- **Parameters:**
+  - `str_one`: The first string to compare.
+  - `str_two`: The second string to compare.
+  
+- **Returns:** `CSTR_TRUE` if the strings are equal, `CSTR_FALSE` if they are not.
+
+## Example Usage
+
 ```c
-SB_Return_Code sb_build(SB_String* self, const SB_String_Ptr string);
-```
+#include "CString.h"
 
-Frees the allocated memory `SB_String* self->value`.
-```c
-SB_Return_Code sb_free(SB_String* self);
-```
+int main() {
+    // Create and build a string
+    CSTR_String my_string;
+    cstr_build(&my_string, "Hello");
 
-Returns size of `const SB_String_Ptr self`.
-```c
-SB_ULLong sb_length(const SB_String_Ptr self);
-```
+    // Append text to the string
+    cstr_append(&my_string, " World", 1);
 
-Adds `SB_String_Ptr append_string` to `SB_String* self->value`
-`const SB_UChar count` times.
-```c
-SB_Return_Code sb_append(SB_String* self, SB_String_Ptr append_string, const SB_UChar count);
-```
+    // Split the string by space
+    CSTR_Slices slices;
+    cstr_split(&slices, my_string.value, ' ');
 
-Returns first index of found `const SB_Char ch` in `SB_String* self->value`, the start position can be specified with `const SB_ULLong start_position`.
-```c
-SB_LLong sb_index_of(SB_String* self, const SB_Char ch, const SB_ULLong start_position);
-```
+    // Print the results
+    for (int i = 0; i < slices.size; i++) {
+        printf("Slice %d: %.*s\n", i, (int)slices.items[i].length, slices.items[i].start);
+    }
 
-Stores substring in `SB_String* self`, from `const SB_ULLong start` to `const SB_ULLong end`.
-```c
-SB_Return_Code sb_slice(SB_String* self, const SB_ULLong start, const SB_ULLong end);
-```
+    // Clean up
+    cstr_free(&my_string);
+    cstr_split_free(&slices);
 
-Compare `const SB_String_Ptr str_one` with `const SB_String_Ptr str_two`.
-```c
-SB_Bool sb_compare(const SB_String_Ptr str_one, const SB_String_Ptr str_two);
-```
-
-Create slice of strings, separate a string in to string array with `const SB_Char spliter`.
-```c
-SB_Return_Code sb_split(SB_Slices* self, const SB_String_Ptr to_split, const SB_Char spliter);
-```
-
-Delete array of sliced strings.
-```c
-SB_Return_Code sb_split_free(SB_Slices* self);
-```
-
-## Example
-```c
-#include "SBString.h"
-
-#include <stdio.h>
-
-SB_String a = {0};
-SB_Slices slice = {0};
-
-void TEST_sb_build() {
-	sb_build(&a, "Simple string");
-	printf("TEST(1):[%s %lli]\n", a.value, a.length);
-	sb_free(&a);
-
-	sb_build(&a, "Simple string but bigger lol kek cheburek hahah");
-	printf("TEST(2):[%s %lli]\n", a.value, a.length);
-	sb_free(&a);
-
-	sb_build(&a, "Simple string more kdcklscksdkscknskcsncklsdncksdcnskldcsnklcnsknclksdncskldcnsdklncscnsklcsncskldncsklcnskcsldcnsdklcsndcdkncklsc");
-	printf("TEST(3):[%s %lli]\n", a.value, a.length);
-	sb_free(&a);
-
-	sb_build(&a, "Simple string okkklllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkklkcsksdkcnkldclsdclsdncsdknkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-	printf("TEST(4):[%s %lli]\n", a.value, a.length);
-	sb_free(&a);
-}
-
-void TEST_sb_append() {
-	sb_build(&a, "Scum");
-
-	sb_append(&a, "SUS", 1);
-	printf("TEST(1):[%s %lli]\n", a.value, a.length);
-
-	sb_append(&a, "SUS", 50);
-	printf("TEST(2):[%s %lli]\n", a.value, a.length);
-
-	sb_append(&a, "SUS", 255);
-	printf("TEST(3):[%s %lli]\n", a.value, a.length);
-
-	sb_free(&a);
-	sb_build(&a, "Scum");
-
-	sb_append(&a, a.value, 5);
-	printf("TEST(4):[%s %lli]\n", a.value, a.length);
-
-	sb_append(&a, a.value, 50);
-	printf("TEST(5):[%s %lli]\n", a.value, a.length);
-
-	sb_append(&a, a.value, 255);
-	printf("TEST(6):[%s %lli]\n", a.value, a.length);
-}
-
-void TEST_sb_split() {
-	sb_split(&slice, "Suskdckc c ekcelrlkcnerlkc elrcrekcnreckreclrekckl eclecekck ecle roekree Sus dick kurwa cock", ' ');
-	for(int index = 0; index < slice.size; index++)
-		printf("%.*s\n", slice.items[index].length, slice.items[index].start);
-}
-
-void TEST_sb_slice() {
-	sb_build(&a, "Suck");
-	printf("%s\n", a.value);
-	sb_slice(&a, 1, a.length-2);
-	printf("%s\n", a.value);
-}
-
-int main(void) {
-	TEST_sb_build();
-	printf("\n#############################################################################################################################\n");
-	TEST_sb_append();
-	printf("\n#############################################################################################################################\n");
-	TEST_sb_split();
-	printf("\n#############################################################################################################################\n");
-	TEST_sb_slice();
-	printf("\n#############################################################################################################################\n");
-	
-	return 0;
+    return 0;
 }
 ```
