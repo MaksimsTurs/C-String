@@ -48,6 +48,7 @@ typedef double             CSTR_Double;
 #define CSTR_FAIL_IF(condition, error_code) do { \
 	if(condition) return error_code;              \
 } while(0);
+#define CSTR_PEAK_CH(str, offset) *(str + offset)
 
 /*=======================================================================*/
 
