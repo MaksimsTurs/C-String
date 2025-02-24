@@ -3,6 +3,8 @@
 /*=======================================================================*/
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 /*=======================================================================*/
 
@@ -30,31 +32,42 @@ typedef double             CSTR_Double;
 /*=======================================================================*/
 
 // Boolean constants.
-#define CSTR_TRUE                    (CSTR_UChar)1
-#define CSTR_FALSE                   (CSTR_UChar)0
+#define CSTR_TRUE                        (CSTR_UChar)1
+#define CSTR_FALSE                       (CSTR_UChar)0
 // Error/success constants.
-#define CSTR_ERROR_MEMALLOC          (CSTR_UChar)0
-#define CSTR_ERROR_INVALID_PTR       (CSTR_UChar)1
-#define CSTR_ERROR_INVALID_LENGTH    (CSTR_UChar)2
-#define CSTR_ERROR_INVALID_POSITION  (CSTR_UChar)3
-#define CSTR_ERROR_INVALID_COUNT     (CSTR_UChar)4
-#define CSTR_ERROR_VALUE_IS_NOT_NULL (CSTR_UChar)5
-#define CSTR_ERROR_NOT_FOUND         (CSTR_UChar)6
-#define CSTR_SUCCESS                 (CSTR_UChar)7
+#define CSTR_ERROR_MEMALLOC              (CSTR_UChar)0
+#define CSTR_ERROR_INVALID_PTR           (CSTR_UChar)1
+#define CSTR_ERROR_INVALID_LENGTH        (CSTR_UChar)2
+#define CSTR_ERROR_INVALID_POSITION      (CSTR_UChar)3
+#define CSTR_ERROR_INVALID_COUNT         (CSTR_UChar)4
+#define CSTR_ERROR_INVALID_RESIZE_FACTOR (CSTR_UChar)5
+#define CSTR_ERROR_VALUE_IS_NOT_NULL     (CSTR_UChar)6
+#define CSTR_ERROR_NOT_FOUND             (CSTR_UChar)7
+#define CSTR_SUCCESS                     (CSTR_UChar)8
 // Character constants.
-#define CSTR_NULL_TERMINATOR         (CSTR_UChar)'\0'
+#define CSTR_NULL_TERMINATOR             (CSTR_UChar)'\0'
+
+#define CSTR_LONG_MAGIC                  (CSTR_ULLong)0x01010101L
+#define CSTR_HIG_MAGIC                   (CSTR_ULLong)0x80808080L
+
+#define CSTR_MAX_RESIZE_FACTOR           (CSTR_Float)10.0f
 
 // Utils macros.
 #define CSTR_FAIL_IF(condition, error_code) do { \
-	if(condition) return error_code;              \
+	if(condition)return error_code;              \
 } while(0);
-#define CSTR_PEAK_CH(str, offset) *(str + offset)
+#define CSTR_PEAK_TOKEN(str, offset) *(str + offset)
+// If buffer size is equal to zero, functions will have default behavior.
+#define CSTR_IS_BUFFER_USED(size) size != 0
 
 /*=======================================================================*/
 
 typedef struct {
-	CSTR_Char_Ptr value;
-	CSTR_ULLong length;
+	CSTR_Char_Ptr val;
+	CSTR_ULLong len;
+	
+	CSTR_ULLong buff_size;
+	CSTR_Float buff_resize_fac;
 } CSTR_String;
 
 typedef struct {
@@ -69,7 +82,7 @@ typedef struct {
 
 /*=======================================================================*/
 
-CSTR_Ret_Code cstr_build(CSTR_String* const this, CSTR_Char_Ptr const value);
+CSTR_Ret_Code cstr_build(CSTR_String* const this, CSTR_Char_Ptr const val);
 CSTR_Ret_Code cstr_free(CSTR_String* const this);
 CSTR_Ret_Code cstr_split(CSTR_Slices* const this, CSTR_Char_Ptr const to_split, CSTR_Char const spliter);
 CSTR_Ret_Code cstr_split_free(CSTR_Slices* const this);
